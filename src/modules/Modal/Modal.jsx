@@ -1,53 +1,46 @@
-import { Component } from 'react';
-import styles from './modal.module.css';
-import { createPortal } from 'react-dom';
+import { useEffect } from 'react';
 import PropTypes from 'prop-types';
+import styles from './modal.module.css';
 
-const ModalRoot = document.querySelector('#ModalRoot');
 
-class Modal extends Component {
-    state = {};
+const Modal = ({ onClose, image }) => {
+    const { url, alt } = image;
 
-    componentDidMount() {
-        window.addEventListener('keydown', this.keydownClick);
-    }
-
-    componentWillUnmount() {
-        window.removeEventListener('keydown', this.keydownClick);
-    }
-
-    keydownClick = evt => {
-        if (evt.code === 'Escape') {
-            this.props.onClose();
+    useEffect(() => {
+        function keydownClick(evt) {
+            if (evt.code === 'Escape') {
+                onClose();
+            }
         }
-    };
 
-    backdropClick = evt => {
+        window.addEventListener('keydown', keydownClick);
+
+        return () => {
+            window.removeEventListener('keydown', keydownClick);
+        };
+    });
+
+    function backdropClick(evt) {
         if (evt.target === evt.currentTarget) {
-            this.props.onClose();
+            onClose();
         }
-    };
-
-    render() {
-        const { children } = this.props;
-        const { backdropClick } = this;
-        const { onClick, image: { alt, url } } = this.props;
-
-        return createPortal(
-            <div className={styles.overlay} onClick={backdropClick}>
-                <div className={styles.modal}>
-                    {children}
-                    <img src={url} alt={alt} onClick={onClick} />
-                </div>
-            </div>,
-            ModalRoot
-        );
     }
+
+    return (
+        <div className={styles.overlay} onClick={backdropClick}>
+            <div className={styles.modal}>
+                <img src={url} alt={alt} />
+            </div>
+        </div>
+    );
 }
 
-export default Modal;
-
 Modal.propTypes = {
-    image: PropTypes.object,
-    onClose: PropTypes.func,
+    onClose: PropTypes.func.isRequired,
+    image: PropTypes.shape({
+        url: PropTypes.string.isRequired,
+        alt: PropTypes.string.isRequired,
+    }),
 };
+
+export default Modal;
