@@ -1,5 +1,7 @@
+
 import styles from './searchbar.module.css';
 import { ImSearch } from 'react-icons/im';
+import PropTypes from 'prop-types'
 
 const Searchbar = ({ onSubmit }) => {
     return (
@@ -23,3 +25,6 @@ const Searchbar = ({ onSubmit }) => {
 }
 
 export default Searchbar;
+
+
+Searchbar.propTypes = { onSubmit: PropTypes.func.isRequired };
